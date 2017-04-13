@@ -10,20 +10,6 @@ import Vapor
 import Fluent
 import Foundation
 
-//// MARK: - User Variables
-//struct UserVariables {
-//    static let id = "id"
-//    static let content = "content"
-//    
-//    static let passwordHash = "passwordHash"
-//    static let username = "username"
-//    static let password = "password"
-//    static let lastPostedAt = "lastPostedAt"
-//    
-//    static let createdAt = "createdAt"
-//    static let updatedAt = "updatedAt"
-//}
-
 final class User: Model {
     
     // MARK: - Instance Vars
@@ -39,7 +25,7 @@ final class User: Model {
     var updatedAt: Date
     
     // MARK: - Inits
-    init(content: String) {
+    init(password: String) {
         self.id = UUID().uuidString.makeNode()
         
         // Init my shit here
