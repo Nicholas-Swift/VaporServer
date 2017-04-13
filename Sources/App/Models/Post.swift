@@ -3,43 +3,68 @@ import Fluent
 import Foundation
 
 final class Post: Model {
-    var id: Node?
-    var content: String
     
-    init(content: String) {
+    // MARK: - Instance Vars
+    var id: Node?
+    
+    var mediaAssetURL: String
+    var mediaThumbURL: String
+    var isVideo: Bool
+    var belongsTo: User
+    
+    var createdAt: Date
+    var updatedAt: Date
+    
+    // MARK: - Inits
+    init(mediaAssetURL: String, mediaThumbURL: String, isVideo: Bool, user: User) {
         self.id = UUID().uuidString.makeNode()
-        self.content = content
+        
+        self.mediaAssetURL = mediaAssetURL
+        self.mediaThumbURL = mediaThumbURL
+        self.isVideo = isVideo
+        self.belongsTo = user
+        
+        self.createdAt = Date()
+        self.updatedAt = Date()
     }
-
+    
     init(node: Node, in context: Context) throws {
         id = try node.extract("id")
-        content = try node.extract("content")
+        
+        mediaAssetURL = try node.extract("mediaAssetURL")
+        mediaThumbURL = try node.extract("mediaThumbURL")
+        isVideo = try node.extract("isVideo")
+        belongsTo = try node.extract("belongsTo")
+        
+        createdAt = try DateFormatter().date(from: node.extract("createdAt"))!
+        updatedAt = try DateFormatter().date(from: node.extract("updatedAt"))!
     }
-
+    
+    // MARK: - Node
     func makeNode(context: Context) throws -> Node {
         return try Node(node: [
             "id": id,
-            "content": content
-        ])
+            
+            "mediaAssetURL": mediaAssetURL,
+            "mediaThumbURL": mediaThumbURL,
+            "isVideo": isVideo,
+            "belongsTo": belongsTo,
+            
+            "createdAt": DateFormatter().string(from: createdAt),
+            "updatedAt": DateFormatter().string(from: updatedAt)])
     }
+    
 }
 
-extension Post {
-    /**
-        This will automatically fetch from database, using example here to load
-        automatically for example. Remove on real models.
-    */
-    public convenience init?(from string: String) throws {
-        self.init(content: string)
-    }
-}
-
+// MARK: - Database Preparation
 extension Post: Preparation {
+    
     static func prepare(_ database: Database) throws {
-        //
+        // prepare stuff here
     }
-
+    
     static func revert(_ database: Database) throws {
-        //
+        // revert stuff here
     }
+    
 }

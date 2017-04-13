@@ -1,13 +1,11 @@
 import Vapor
+import HTTP
 
+// Init server
 let drop = Droplet()
 
-drop.get { req in
-    return try drop.view.make("welcome", [
-    	"message": drop.localization[req.lang, "welcome", "title"]
-    ])
-}
+// Add all routes
+Routing.addAllRoutes(to: drop)
 
-drop.resource("posts", PostController())
-
+// Run
 drop.run()
