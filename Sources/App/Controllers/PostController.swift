@@ -19,7 +19,16 @@ final class PostController: ResourceRepresentable {
     // Create
     func create(request: Request) throws -> ResponseRepresentable {
         var post = try request.post()
+        // let user = GET_USER_FROM_REQUEST_JWT_TOKEN
+        
+        // post.belongsTo = user???
+        // user.posts.append(post) ??
+        
         try post.save()
+        // If post successfully saved do the rest
+            // // Update user
+            // user.lastPostedAt = Date()
+            // update user in database
         return post
     }
 

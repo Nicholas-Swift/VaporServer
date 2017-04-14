@@ -25,6 +25,9 @@ class UserController: ResourceRepresentable {
     
     // Show me
     func showMe(user: User) throws -> ResponseRepresentable {
+        
+        // Get the auth token and return the user from the jwt token
+        
         return user
     }
     

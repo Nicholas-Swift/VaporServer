@@ -12,13 +12,16 @@ import Foundation
 
 final class User: Model {
     
+    // MARK: - Class Vars
+    static var currentUsernames: Set<String> = Set() // on init, set of all usernames in database
+    
     // MARK: - Instance Vars
     var id: Node?
     
     var passwordHash: String
     var username: String
     var password: String
-    var lastPostedAt: Date
+    var lastPostedAt: Date?
     var posts: [Post]
     
     var createdAt: Date
@@ -28,8 +31,14 @@ final class User: Model {
     init(password: String) {
         self.id = UUID().uuidString.makeNode()
         
-        // Init my shit here
+        self.passwordHash = "?"
+        self.username = self.generateUsername()
+        self.password = password
+        self.posts = []
+        self.lastPostedAt = nil
         
+        self.createdAt = Date()
+        self.updatedAt = Date()
     }
     
     init(node: Node, in context: Context) throws {
@@ -53,8 +62,8 @@ final class User: Model {
             "passwordHash": passwordHash,
             "username": username,
             "password": password,
-            "lastPostedAt": DateFormatter().string(from: lastPostedAt),
-//            "posts": posts,
+            "lastPostedAt": lastPostedAt == nil ? nil : DateFormatter().string(from: lastPostedAt!),
+            "posts": try posts.makeNode(),
             
             "createdAt": DateFormatter().string(from: createdAt),
             "updatedAt": DateFormatter().string(from: updatedAt)])
@@ -70,4 +79,25 @@ extension User: Preparation {
     static func revert(_ database: Database) throws {
         // revert
     }
+}
+
+// MARK: - Username Creation
+extension User {
+    
+    fileprivate func generateUsername() -> String {
+        
+        // Generate new username
+        var newUsername = Usernames.adjectives.randomItem() + Usernames.nouns.randomItem()
+        
+        // Keep rerolling until unique
+        while User.currentUsernames.contains(newUsername) {
+            newUsername = Usernames.adjectives.randomItem() + Usernames.nouns.randomItem()
+        }
+        
+        // Insert to currentUsernames
+        User.currentUsernames.insert(newUsername)
+        
+        return newUsername
+    }
+    
 }

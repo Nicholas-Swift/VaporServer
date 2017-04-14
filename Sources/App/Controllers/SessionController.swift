@@ -14,6 +14,7 @@ class SessionController: ResourceRepresentable {
     // Create
     func create(request: Request) throws -> ResponseRepresentable {
          // take in username and password and create a session (jwtToken) and return
+        return "jwtToken"
     }
     
 }
