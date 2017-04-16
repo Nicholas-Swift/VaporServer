@@ -7,7 +7,7 @@ let drop = Droplet(
 )
 
 // Add all routes
-Routing.addAllRoutes(to: drop)
+//Routing.addAllRoutes(to: drop)
 
 // Run
 drop.run()
