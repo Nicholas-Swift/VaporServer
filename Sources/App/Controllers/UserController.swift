@@ -13,7 +13,7 @@ class UserController: ResourceRepresentable {
     
     // Create
     func create(request: Request) throws -> ResponseRepresentable {
-        var user = try request.user()
+        var user = try request.createUser()
         try user.save()
         return user
     }
@@ -48,7 +48,7 @@ extension UserController {
 // MARK: - User Request Extension
 extension Request {
     
-    func user() throws -> User {
+    func createUser() throws -> User {
         guard let json = json else { throw Abort.badRequest }
         return try User(node: json)
     }

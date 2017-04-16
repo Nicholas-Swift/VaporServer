@@ -2,13 +2,12 @@
 //  jwtauth.swift
 //  VaporServer
 //
-//  Created by PENNAA on 4/15/17.
+//  Created by WHATARETHOSE on 4/15/17.
 //
 //
 
 import Vapor
 import HTTP
-import Turnstile
 import Auth
 import VaporJWT
 
@@ -16,7 +15,7 @@ final class JWTAuthMiddleware: Middleware {
     
     func respond(to request: Request, chainingTo next: Responder) throws -> Response {
         if let token = request.auth.header?.bearer?.string {
-            request.user = try validateAndGetUser(token: token)
+            request.headers.customKey = try validateAndGetUser(token: token)
         }
         
         let response = try next.respond(to: request)
@@ -24,7 +23,7 @@ final class JWTAuthMiddleware: Middleware {
         return response
     }
     
-    public func validateAndGetUser(token: String) throws -> User{
+    public func validateAndGetUser(token: String) throws -> User {
         
         let jwt =  try JWT(token: token)
         
@@ -42,5 +41,17 @@ final class JWTAuthMiddleware: Middleware {
         
         return user
         
+    }
+}
+
+
+extension HTTP.KeyAccessible where Key == HeaderKey, Value == Any {
+    var customKey: Any? {
+        get {
+            return self["Custom-Key"]
+        }
+        set {
+            self["Custom-Key"] = newValue
+        }
     }
 }
