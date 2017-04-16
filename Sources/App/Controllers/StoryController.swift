@@ -51,8 +51,8 @@ extension StoryController {
     
     func makeResource() -> Resource<User> {
         return Resource(
-            index: index,
-            show: myStory
+            index: index
+//            show: myStory
         )
     }
     
