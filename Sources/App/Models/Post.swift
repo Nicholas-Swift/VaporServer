@@ -3,29 +3,27 @@ import Fluent
 import Foundation
 
 final class Post: Model {
-    
-    // MARK: - Instance Vars
     var id: Node?
+    var exists: Bool = false
     
     var mediaAssetURL: String
     var mediaThumbURL: String
     var isVideo: Bool
-    var belongsTo: User
     
     var createdAt: Date
     var updatedAt: Date
     
-    // MARK: - Inits
-    init(mediaAssetURL: String, mediaThumbURL: String, isVideo: Bool, user: User) {
-        self.id = UUID().uuidString.makeNode()
-        
+    var userId: Node?
+    
+    init(mediaAssetURL: String, mediaThumbURL: String, isVideo: Bool, userId: Node? = nil) {
         self.mediaAssetURL = mediaAssetURL
         self.mediaThumbURL = mediaThumbURL
         self.isVideo = isVideo
-        self.belongsTo = user
         
         self.createdAt = Date()
         self.updatedAt = Date()
+        
+        self.userId = userId
     }
     
     init(node: Node, in context: Context) throws {
@@ -34,13 +32,13 @@ final class Post: Model {
         mediaAssetURL = try node.extract("mediaAssetURL")
         mediaThumbURL = try node.extract("mediaThumbURL")
         isVideo = try node.extract("isVideo")
-        belongsTo = try node.extract("belongsTo")
         
         createdAt = try DateFormatter().date(from: node.extract("createdAt"))!
         updatedAt = try DateFormatter().date(from: node.extract("updatedAt"))!
+        
+        userId = try node.extract("user_Id")
     }
     
-    // MARK: - Node
     func makeNode(context: Context) throws -> Node {
         return try Node(node: [
             "id": id,
@@ -48,23 +46,33 @@ final class Post: Model {
             "mediaAssetURL": mediaAssetURL,
             "mediaThumbURL": mediaThumbURL,
             "isVideo": isVideo,
-            "belongsTo": belongsTo,
             
             "createdAt": DateFormatter().string(from: createdAt),
-            "updatedAt": DateFormatter().string(from: updatedAt)])
+            "updatedAt": DateFormatter().string(from: updatedAt),
+            
+            "userId": userId
+        ])
     }
-    
 }
 
-// MARK: - Database Preparation
-extension Post: Preparation {
+// MARK: - Database
+extension Post {
     
     static func prepare(_ database: Database) throws {
-        // prepare stuff here
+        try database.create("posts") { users in
+            users.id()
+            users.string("mediaAssetURL")
+            users.string("mediaThumbURL")
+            users.bool("isVideo")
+            users.string("createdAt")
+            users.string("updatedAt")
+            
+            users.parent(User.self, optional: false)
+        }
     }
     
     static func revert(_ database: Database) throws {
-        // revert stuff here
+        try database.delete("posts")
     }
     
 }

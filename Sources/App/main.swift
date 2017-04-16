@@ -2,7 +2,9 @@ import Vapor
 import HTTP
 
 // Init server
-let drop = Droplet()
+let drop = Droplet(
+    preparations: [User.self]
+)
 
 // Add all routes
 Routing.addAllRoutes(to: drop)

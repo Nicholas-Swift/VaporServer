@@ -13,10 +13,15 @@ final class PostController: ResourceRepresentable {
     
     // Index
     func index(request: Request) throws -> ResponseRepresentable {
-        return try Post.all().makeNode().converted(to: JSON.self)
+        return try JSON(Post.all().makeNode())
     }
 
-    // Create
+    // Show
+    func show(request: Request, post: Post) throws -> ResponseRepresentable {
+        return try JSON(post.makeNode())
+    }
+    
+    // Create - AUTH
     func create(request: Request) throws -> ResponseRepresentable {
         var post = try request.post()
         // let user = GET_USER_FROM_REQUEST_JWT_TOKEN
@@ -31,18 +36,12 @@ final class PostController: ResourceRepresentable {
             // update user in database
         return post
     }
-
-    // Show
-    func show(request: Request, post: Post) throws -> ResponseRepresentable {
-        return post
-    }
     
-    // Delete
+    // Delete - AUTH
     func delete(request: Request, post: Post) throws -> ResponseRepresentable {
         try post.delete()
         return JSON([:])
     }
-    
 }
 
 // MARK: - Make Resource
