@@ -176,3 +176,10 @@ extension User {
     }
     
 }
+
+// MARK: Helper functions
+//extension User {
+//    func stories(<#parameters#>) -> <#return type#> {
+//        <#function body#>
+//    }
+//}

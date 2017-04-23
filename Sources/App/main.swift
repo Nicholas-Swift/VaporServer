@@ -5,7 +5,7 @@ import Auth
 
 // Init server
 let drop = Droplet(
-    preparations: [User.self],
+    preparations: [User.self, Post.self],
     providers: [VaporPostgreSQL.Provider.self]
 )
 
@@ -16,12 +16,16 @@ drop.group("api") { api in
     api.group("v1") { v1 in
         
         let usersController = UsersController()
+        let postsController = PostsController()
+        let storiesController = StoriesController()
         
         /*
          * /users
          * Create a new Username and Password to receive an authorization token and account
          */
         v1.post("users", handler: usersController.create)
+        
+        v1.get("stories", handler: storiesController.stories)
         
         /*
          * Secured Endpoints
@@ -43,6 +47,13 @@ drop.group("api") { api in
              * Log out
              */
 //            users.post("logout", handler: usersController.logout)
+            
+            
+            /*
+             * /posts
+             * Create a new post by passing in all the relevant data
+             */
+            secured.post("posts", handler: postsController.create)
         }
         
     }

@@ -13,28 +13,26 @@ final class Post: Model {
     var isVideo: Bool
     var createdAt: Date
     var updatedAt: Date
+    var userId: Node?
     
     // MARK: - Inits
-    init(mediaAssetURL: String, mediaThumbURL: String, isVideo: Bool) {
+    init(mediaAssetURL: String, mediaThumbURL: String, isVideo: Bool, userId: Node? = nil) {
         self.mediaAssetURL = mediaAssetURL
         self.mediaThumbURL = mediaThumbURL
         self.isVideo = isVideo
         self.createdAt = Date()
         self.updatedAt = Date()
+        self.userId = userId
     }
     
     init(node: Node, in context: Context) throws {
         id = try node.extract("id")
-        
         mediaAssetURL = try node.extract("media_asset_url")
         mediaThumbURL = try node.extract("media_thumb_url")
         isVideo = try node.extract("is_video")
-        
-        let createdAtString: String = try node.extract("created_at")
-        createdAt = createdAtString.hsfToDate()!
-        
-        let updatedAtString: String = try node.extract("updated_at")
-        updatedAt = updatedAtString.hsfToDate()!
+        createdAt = Date()
+        updatedAt = Date()
+        userId = try node.extract("user_id")
     }
 
 }
@@ -48,8 +46,9 @@ extension Post: NodeRepresentable {
             "media_asset_url": mediaAssetURL.makeNode(),
             "media_thumb_url": mediaThumbURL.makeNode(),
             "is_video": isVideo.makeNode(),
-            "created_at": self.createdAt.hsfToString().makeNode(),
-            "updated_at": self.updatedAt.hsfToString().makeNode()
+            "created_at": createdAt.hsfToString().makeNode(),
+            "updated_at": updatedAt.hsfToString().makeNode(),
+            "user_id": userId
             ])
     }
     
@@ -66,6 +65,7 @@ extension Post {
             posts.bool("is_video")
             posts.string("created_at")
             posts.string("updated_at")
+            posts.parent(User.self, optional: false)
         }
     }
     
@@ -73,4 +73,11 @@ extension Post {
         try database.delete("posts")
     }
     
+}
+
+// MARK: Helper functions
+extension Post {
+    func user() throws -> User? {
+        return try parent(userId, nil, User.self).get()
+    }
 }
