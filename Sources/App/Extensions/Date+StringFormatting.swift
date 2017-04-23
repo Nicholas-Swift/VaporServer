@@ -62,7 +62,7 @@ extension Date {
 
 extension String {
     
-    func hsfToDate() throws -> Date {
+    func hsfToDate() -> Date? {
         
         // Init date formatter
         let dateFormatter = DateFormatter()
@@ -70,13 +70,10 @@ extension String {
         dateFormatter.timeZone = TimeZone(abbreviation: "PST")
         
         // Back to date
-        guard let dateString = dateFormatter.date(from: self) else {
-            throw DateFormatError()
-        }
+        let dateString = dateFormatter.date(from: self)
         
         // Return
         return dateString
-        
     }
     
 }

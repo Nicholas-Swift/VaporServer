@@ -46,9 +46,11 @@ final class User: Auth.User {
         id = try node.extract("id")
         username = try node.extract("username")
         password = try node.extract("password")
-        lastPostedAt = try node.extract("lastPostedAt", transform: { (string: String) in return try string.hsfToDate() })
-        createdAt = try node.extract("createdAt", transform: { (string: String) in return try string.hsfToDate() })
-        updatedAt = try node.extract("updatedAt", transform: { (string: String) in return try string.hsfToDate() })
+        let lastPostedAtString: String? = try? node.extract("lastPostedAt")
+        lastPostedAt = lastPostedAtString?.hsfToDate()
+        
+        createdAt = try node.extract("createdAt", transform: { (string: String) in return string.hsfToDate() })!
+        updatedAt = try node.extract("updatedAt", transform: { (string: String) in return string.hsfToDate() })!
     }
     
     init(credentials: PasswordCredentials) {
@@ -127,10 +129,10 @@ extension User: NodeRepresentable {
             
             "username": self.username.makeNode(),
             "password": self.password.makeNode(),
-            "lastPostedAt": self.lastPostedAt == nil ? .null : self.lastPostedAt!.hsfToString().makeNode(),
+            "lastPostedAt": self.lastPostedAt == nil ? .null : HSFDateFormatting.hsfDateToString(date: self.lastPostedAt!).makeNode(),
             
-            "createdAt": self.createdAt.hsfToString().makeNode(),
-            "updatedAt": self.updatedAt.hsfToString().makeNode()
+            "createdAt": HSFDateFormatting.hsfDateToString(date: self.createdAt).makeNode(),
+            "updatedAt": HSFDateFormatting.hsfDateToString(date: self.updatedAt).makeNode()
             ])
     }
 }
