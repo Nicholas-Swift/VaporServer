@@ -3,6 +3,8 @@ import Fluent
 import Foundation
 
 final class Post: Model {
+    
+    // MARK: - Instance Variables
     var id: Node?
     var exists: Bool = false
     
@@ -15,6 +17,7 @@ final class Post: Model {
     
     var userId: Node?
     
+    // MARK: - Inits
     init(mediaAssetURL: String, mediaThumbURL: String, isVideo: Bool, userId: Node? = nil) {
         self.mediaAssetURL = mediaAssetURL
         self.mediaThumbURL = mediaThumbURL
@@ -38,6 +41,11 @@ final class Post: Model {
         
         userId = try node.extract("user_Id")
     }
+
+}
+
+// MARK: - Node Representable
+extension Post: NodeRepresentable {
     
     func makeNode(context: Context) throws -> Node {
         return try Node(node: [
@@ -51,8 +59,9 @@ final class Post: Model {
             "updatedAt": DateFormatter().string(from: updatedAt),
             
             "userId": userId
-        ])
+            ])
     }
+    
 }
 
 // MARK: - Database

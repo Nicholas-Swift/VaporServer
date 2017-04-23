@@ -21,6 +21,7 @@ struct Authentication {
 
 final class User: Auth.User {
     
+    // MARK: - Instance Variables
     static var currentUsernames: Set<String> = Set()
     var id: Node?
     var exists: Bool = false
@@ -32,6 +33,7 @@ final class User: Auth.User {
     var createdAt: Date
     var updatedAt: Date
     
+    // MARK: - Inits
     init(password: String) {
         self.username = User.generateUsername()
         self.password = BCrypt.hash(password: password)
@@ -44,9 +46,9 @@ final class User: Auth.User {
         id = try node.extract("id")
         username = try node.extract("username")
         password = try node.extract("password")
-        lastPostedAt = Date() //try DateFormatter().date(from: node.extract("lastPostedAt"))
-        createdAt = Date() //try DateFormatter().date(from: node.extract("createdAt"))!
-        updatedAt = Date() //try DateFormatter().date(from: node.extract("updatedAt"))!
+        lastPostedAt = try node.extract("lastPostedAt", transform: { (string: String) in return try string.hsfToDate() })
+        createdAt = try node.extract("createdAt", transform: { (string: String) in return try string.hsfToDate() })
+        updatedAt = try node.extract("updatedAt", transform: { (string: String) in return try string.hsfToDate() })
     }
     
     init(credentials: PasswordCredentials) {
@@ -58,8 +60,10 @@ final class User: Auth.User {
     }
 }
 
-// MARK: Authentication
+// MARK: - Authentication
 extension User {
+    
+    // Authenticate user with credentials
     @discardableResult
     static func authenticate(credentials: Credentials) throws -> Auth.User {
         var user: User?
@@ -91,6 +95,7 @@ extension User {
         return guardedUser
     }
     
+    // Register a user with credentials
     @discardableResult
     static func register(credentials: Credentials) throws -> Auth.User {
         var newUser: User
@@ -113,22 +118,26 @@ extension User {
     
 }
 
-// MARK: Node Representable
+// MARK: - Node Representable
 extension User: NodeRepresentable {
+    
     func makeNode(context: Context) throws -> Node {
         return try Node(node: [
             "id": self.id?.makeNode(),
+            
             "username": self.username.makeNode(),
             "password": self.password.makeNode(),
-            "lastPostedAt": self.lastPostedAt == nil ? .null : DateFormatter().string(from: self.lastPostedAt!).makeNode(),
-            "createdAt": DateFormatter().string(from: self.createdAt).makeNode(),
-            "updatedAt": DateFormatter().string(from: self.updatedAt).makeNode()
+            "lastPostedAt": self.lastPostedAt == nil ? .null : self.lastPostedAt!.hsfToString().makeNode(),
+            
+            "createdAt": self.createdAt.hsfToString().makeNode(),
+            "updatedAt": self.updatedAt.hsfToString().makeNode()
             ])
     }
 }
 
-// MARK: Preparation
+// MARK: - Database
 extension User {
+    
     static func prepare(_ database: Database) throws {
         try database.create("users") { users in
             users.id()

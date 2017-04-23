@@ -9,6 +9,7 @@
 import Foundation
 
 extension Date {
+    
     func isGreaterThanDate(dateToCompare: Date) -> Bool {
         //Declare Variables
         var isGreater = false

@@ -63,6 +63,7 @@ class UsersController {
 
 // MARK: - User Request Extension
 extension Request {
+    
     // Helper method to get the current user
     func user() throws -> User {
         guard let user = try auth.user() as? User else {
