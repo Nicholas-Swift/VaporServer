@@ -23,6 +23,28 @@ drop.group("api") { api in
          */
         v1.post("users", handler: usersController.create)
         
+        /*
+         * Secured Endpoints
+         * Anything in here requires the Authorication header:
+         * Example: "Authorization: Bearer TOKEN"
+         */
+        let protect = ProtectMiddleware(error: Abort.custom(status: .unauthorized, message: "Unauthorized"))
+        v1.group(BearerAuthMiddleware(), protect) { secured in
+            
+            let users = secured.grouped("users")
+            
+            /*
+             * Me
+             * Get the current users info
+             */
+            users.get("me", handler: usersController.me)
+            
+            /*
+             * Log out
+             */
+//            users.post("logout", handler: usersController.logout)
+        }
+        
     }
     
 }

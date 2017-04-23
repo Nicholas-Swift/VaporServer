@@ -46,6 +46,12 @@ class UsersController {
         }
     }
     
+    
+    // me
+    func me(request: Request) throws -> ResponseRepresentable {
+        return try JSON(node: request.user().makeNode())
+    }
+    
     // Show
 //    func show(request: Request, user: User) throws -> ResponseRepresentable {
 //        return user as! ResponseRepresentable
