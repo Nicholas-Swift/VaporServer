@@ -46,19 +46,11 @@ class UsersController {
         }
     }
     
-    // Show
-//    func show(request: Request, user: User) throws -> ResponseRepresentable {
-//        return user as! ResponseRepresentable
-//    }
-//    
-//    // Show me
-//    func showMe(user: User) throws -> ResponseRepresentable {
-//        
-//        // Get the auth token and return the user from the jwt token
-//        
-//        return user as! ResponseRepresentable
-//    }
     
+    // me
+    func me(request: Request) throws -> ResponseRepresentable {
+        return try JSON(node: request.user().makeNode())
+    }
 }
 
 // MARK: - User Request Extension

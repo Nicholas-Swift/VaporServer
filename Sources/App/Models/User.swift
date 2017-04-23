@@ -46,7 +46,7 @@ final class User: Auth.User {
         id = try node.extract("id")
         username = try node.extract("username")
         password = try node.extract("password")
-        let lastPostedAtString: String? = try? node.extract("lastpostedat")
+        let lastPostedAtString: String? = try? node.extract("last_posted_at")
         lastPostedAt = lastPostedAtString?.hsfToDate()
         
         let createdAtString: String = try node.extract("createdat"); createdAt = createdAtString.hsfToDate()!
@@ -131,8 +131,8 @@ extension User: NodeRepresentable {
             "password": self.password.makeNode(),
             "lastPostedAt": self.lastPostedAt == nil ? .null : self.lastPostedAt!.hsfToString().makeNode(),
             
-            "createdAt": self.createdAt.hsfToString().makeNode(),
-            "updatedAt": self.updatedAt.hsfToString().makeNode()
+            "created_at": self.createdAt.hsfToString().makeNode(),
+            "updated_at": self.updatedAt.hsfToString().makeNode()
             ])
     }
 }
@@ -145,9 +145,9 @@ extension User {
             users.id()
             users.string("username")
             users.string("password")
-            users.string("lastPostedAt", optional: true)
-            users.string("createdAt")
-            users.string("updatedAt")
+            users.string("last_posted_at", optional: true)
+            users.string("created_at")
+            users.string("updated_at")
         }
     }
     

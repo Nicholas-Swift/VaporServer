@@ -29,7 +29,7 @@ final class PostController: ResourceRepresentable {
         var post = try request.post()
         var user = try request.user() // let user = GET_USER_FROM_REQUEST_JWT_TOKEN
         
-        post.userId = user.id // post.belongsTo = user??? // user.posts.append(post) ??
+        // post.userId = user.id // post.belongsTo = user??? // user.posts.append(post) ??
         
         // Try saving and updating
         try post.save()
@@ -50,9 +50,9 @@ final class PostController: ResourceRepresentable {
         let user = try request.user()
         
         // Not matching same id
-        if post.userId != user.id {
-            throw Abort.custom(status: .unauthorized, message: "You are not authorized to delete this")
-        }
+//        if post.userId != user.id {
+//            throw Abort.custom(status: .unauthorized, message: "You are not authorized to delete this")
+//        }
         
         try post.delete()
         return JSON([:])
