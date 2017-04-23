@@ -8,6 +8,7 @@
 
 import Vapor
 import HTTP
+import Foundation
 
 final class PostController: ResourceRepresentable {
     
@@ -23,22 +24,36 @@ final class PostController: ResourceRepresentable {
     
     // Create - AUTH
     func create(request: Request) throws -> ResponseRepresentable {
+        
+        // Get post and user from auth
         var post = try request.post()
-        // let user = GET_USER_FROM_REQUEST_JWT_TOKEN
+        var user = try request.user() // let user = GET_USER_FROM_REQUEST_JWT_TOKEN
         
-        // post.belongsTo = user???
-        // user.posts.append(post) ??
+        post.userId = user.id // post.belongsTo = user??? // user.posts.append(post) ??
         
+        // Try saving and updating
         try post.save()
+        user.lastPostedAt = Date()
+        try user.save()
         // If post successfully saved do the rest
             // // Update user
             // user.lastPostedAt = Date()
             // update user in database
-        return post
+        
+        return try JSON(post.makeNode())
     }
     
     // Delete - AUTH
     func delete(request: Request, post: Post) throws -> ResponseRepresentable {
+        
+        // Get user from auth
+        let user = try request.user()
+        
+        // Not matching same id
+        if post.userId != user.id {
+            throw Abort.custom(status: .unauthorized, message: "You are not authorized to delete this")
+        }
+        
         try post.delete()
         return JSON([:])
     }
