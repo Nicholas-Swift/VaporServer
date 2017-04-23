@@ -11,35 +11,30 @@ final class Post: Model {
     var mediaAssetURL: String
     var mediaThumbURL: String
     var isVideo: Bool
-    
     var createdAt: Date
     var updatedAt: Date
     
-    var userId: Node?
-    
     // MARK: - Inits
-    init(mediaAssetURL: String, mediaThumbURL: String, isVideo: Bool, userId: Node? = nil) {
+    init(mediaAssetURL: String, mediaThumbURL: String, isVideo: Bool) {
         self.mediaAssetURL = mediaAssetURL
         self.mediaThumbURL = mediaThumbURL
         self.isVideo = isVideo
-        
         self.createdAt = Date()
         self.updatedAt = Date()
-        
-        self.userId = userId
     }
     
     init(node: Node, in context: Context) throws {
         id = try node.extract("id")
         
-        mediaAssetURL = try node.extract("mediaAssetURL")
-        mediaThumbURL = try node.extract("mediaThumbURL")
-        isVideo = try node.extract("isVideo")
+        mediaAssetURL = try node.extract("media_asset_url")
+        mediaThumbURL = try node.extract("media_thumb_url")
+        isVideo = try node.extract("is_video")
         
-        createdAt = try DateFormatter().date(from: node.extract("createdAt"))!
-        updatedAt = try DateFormatter().date(from: node.extract("updatedAt"))!
+        let createdAtString: String = try node.extract("created_at")
+        createdAt = createdAtString.hsfToDate()!
         
-        userId = try node.extract("user_Id")
+        let updatedAtString: String = try node.extract("updated_at")
+        updatedAt = updatedAtString.hsfToDate()!
     }
 
 }
@@ -49,16 +44,12 @@ extension Post: NodeRepresentable {
     
     func makeNode(context: Context) throws -> Node {
         return try Node(node: [
-            "id": id,
-            
-            "mediaAssetURL": mediaAssetURL,
-            "mediaThumbURL": mediaThumbURL,
-            "isVideo": isVideo,
-            
-            "createdAt": DateFormatter().string(from: createdAt),
-            "updatedAt": DateFormatter().string(from: updatedAt),
-            
-            "userId": userId
+            "id": id?.makeNode(),
+            "media_asset_url": mediaAssetURL.makeNode(),
+            "media_thumb_url": mediaThumbURL.makeNode(),
+            "is_video": isVideo.makeNode(),
+            "created_at": self.createdAt.hsfToString().makeNode(),
+            "updated_at": self.updatedAt.hsfToString().makeNode()
             ])
     }
     
@@ -68,15 +59,13 @@ extension Post: NodeRepresentable {
 extension Post {
     
     static func prepare(_ database: Database) throws {
-        try database.create("posts") { users in
-            users.id()
-            users.string("mediaAssetURL")
-            users.string("mediaThumbURL")
-            users.bool("isVideo")
-            users.string("createdAt")
-            users.string("updatedAt")
-            
-            users.parent(User.self, optional: false)
+        try database.create("posts") { posts in
+            posts.id()
+            posts.string("media_asset_url")
+            posts.string("media_thumb_url")
+            posts.bool("is_video")
+            posts.string("created_at")
+            posts.string("updated_at")
         }
     }
     
