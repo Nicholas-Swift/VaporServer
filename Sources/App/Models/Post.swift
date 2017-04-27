@@ -51,7 +51,6 @@ extension Post: NodeRepresentable {
             "user_id": userId
             ])
     }
-    
 }
 
 // MARK: - Database

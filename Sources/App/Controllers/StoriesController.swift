@@ -14,6 +14,8 @@ class StoriesController {
 
     func stories(request: Request) throws -> ResponseRepresentable {
         
+        // FUTURE: Integrate this into Fluent, and make a PR for Date type support on the ORM.
+        
         let cutoffDate = Date().addDays(daysToAdd: -2).hsfToString()
         let users = try User.query().filter("last_posted_at", .greaterThan, cutoffDate).all()
         
